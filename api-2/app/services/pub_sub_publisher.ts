@@ -1,28 +1,29 @@
 import { PubSub } from '@google-cloud/pubsub'
 import { PubSubActionEnum } from '#enums/pub_sub_action_enum'
-import { PubSubModel } from '#models/pub_sub'
+import { PubSubMessageModel } from '#models/pub_sub'
 
-export class GooglePubSubPublish {
+export class GooglePubSubPublisher {
   constructor(topicName: string) {
     this._topicName = topicName
   }
   private _topicName: string
-  async createMessages(
+  async publishMessage(
     message: object,
     action: PubSubActionEnum,
     table: 'users',
     api?: 'API1' | 'API2'
   ) {
+    // Gets topic
     const pubSubClient = new PubSub()
-    const send = new PubSubModel(message, action, table, api)
-    // Creates a new topic
     const topic = pubSubClient.topic(this._topicName)
-    const dataSend = JSON.stringify(send)
-    console.log(dataSend)
-    //Create message
-    const data: Buffer = Buffer.from(dataSend)
-    // Send a message to the topic
-    const response = await topic.publishMessage({ data })
+
+    // Stringifying ps message
+    const payload = new PubSubMessageModel(message, action, table, api)
+    const stringifiedPayload = JSON.stringify(payload)
+    console.log(stringifiedPayload)
+
+    // Sending message to the topic
+    const response = await topic.publishMessage({ data: stringifiedPayload })
     console.log('response', response)
   }
 }

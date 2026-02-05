@@ -1,5 +1,5 @@
 import { PubSub, Subscription } from '@google-cloud/pubsub'
-import { PubSubModel } from '#models/pub_sub'
+import { PubSubMessageModel } from '#models/pub_sub'
 
 export class GooglePubSubSubscription {
   constructor(subscriptionName: string) {
@@ -7,17 +7,17 @@ export class GooglePubSubSubscription {
   }
   private _subscription: Subscription
 
-  async listenMessagesV2(
-    fn: (obj: PubSubModel<any>) => Promise<boolean>,
-    logger?: any
+  async listenMessages(
+    tableHandler: (obj: PubSubMessageModel<any>) => Promise<boolean>,
+    console?: any
   ): Promise<void> {
     this._subscription.on('message', async (message: any) => {
       const data = JSON.parse(message.data.toString())
 
-      const pubSubModel = new PubSubModel(data.value, data.action, data.table, data.api)
+      const pubSubModel = new PubSubMessageModel(data.value, data.action, data.table, data.api)
       if (pubSubModel.api !== 'API2') {
         console.log('message received', data)
-        await fn(pubSubModel)
+        await tableHandler(pubSubModel)
           .then(() => {
             message.ack()
           })
@@ -25,14 +25,11 @@ export class GooglePubSubSubscription {
             if (err.routine === '_bt_check_unique') {
               message.ack()
             } else {
-              if (logger) {
-                logger.warn('___________________________________________________')
-                logger.warn('Erro no PubSub (handle):' + JSON.stringify(data[0]))
-                logger.warn('Routine:' + err.routine)
-                logger.warn('Message:' + err.message)
-                logger.warn('Error:' + err)
-              }
-              //comentada a linha que limpa os console.logs de erros
+              console.warn('___________________________________________________')
+              console.warn('Erro no PubSub (handle):' + JSON.stringify(data[0]))
+              console.warn('Routine:' + err.routine)
+              console.warn('Message:' + err.message)
+              console.warn('Error:' + err)
             }
           })
       } else {

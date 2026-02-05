@@ -1,10 +1,10 @@
-import { PubSubModel } from '#models/pub_sub'
+import { PubSubMessageModel } from '#models/pub_sub'
 
 export abstract class PubSubHandlerAction<T> {
-  constructor(pubsubModel: PubSubModel<T>) {
+  constructor(pubsubModel: PubSubMessageModel<T>) {
     this._pubsubValueModel = pubsubModel
   }
-  protected _pubsubValueModel: PubSubModel<T>
+  protected _pubsubValueModel: PubSubMessageModel<T>
 
   async handlerAction(): Promise<boolean> {
     switch (this._pubsubValueModel.action) {

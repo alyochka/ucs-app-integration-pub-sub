@@ -1,6 +1,6 @@
 import { PubSubActionEnum } from '#enums/pub_sub_action_enum'
 
-export class PubSubModel<T> {
+export class PubSubMessageModel<T> {
   readonly value: T
   readonly action: PubSubActionEnum
   readonly table: 'users'

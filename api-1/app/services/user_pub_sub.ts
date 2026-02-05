@@ -1,9 +1,9 @@
-import { PubSubModel } from '#models/pub_sub'
+import { PubSubMessageModel } from '#models/pub_sub'
 import User from '#models/user'
 import { PubSubHandlerAction } from '#services/pub_sub_action_handler'
 
 export class UserPubSub extends PubSubHandlerAction<User> {
-  constructor(pubsubModel: PubSubModel<User>) {
+  constructor(pubsubModel: PubSubMessageModel<User>) {
     super(pubsubModel)
   }
   protected async insert(): Promise<boolean> {
